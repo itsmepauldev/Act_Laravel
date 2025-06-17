@@ -29,6 +29,20 @@ class StudentController extends Controller
    }
    public function store(Request $request)
    {
+         $request-> validate(
+            [
+               'fname' => 'required',
+               'lname' => 'required',
+               'email' => 'required|email|unique:students,email',
+               'contact' => 'required',
+            ],
+            [
+               'fname.required' => 'The First Name field is required.',
+                'lname.required' => 'The Last Name field is required.',
+              
+
+            ]
+         );
       Student::create([
          'fname' => $request['fname'],
          'lname' => $request['lname'],
@@ -38,16 +52,39 @@ class StudentController extends Controller
 
       ]);
 
-      return redirect()->to('students');
+     return redirect()->to('students')->with('success',"Student has been added sucessfully");
    }
 
    public function edit($id)
    {
-        return "The id is $id";
+      $data['student'] = Student::find($id);
+
+      return view('students.edit', $data);
    }
    public function update(Request $request, $id)
    {
-      
+       $student_id = $request['id'];
+       $request-> validate(
+            [
+               'fname' => 'required',
+               'lname' => 'required',
+               'email' => 'required|email|unique:students,email,'. (($student_id) ? $student_id : null). ',id',
+               'contact' => 'required',
+            ],
+            [
+               'fname.required' => 'The First Name field is required.',
+                'lname.required' => 'The Last Name field is required.',
+              
+
+            ]
+         );
+         $student = Student::find($id);
+         $student->fname = $request['fname'];
+         $student->lname = $request['lname'];
+         $student->email = $request['email'];
+         $student->contact = $request['contact'];
+         $student->save();
+return redirect()->to('students')->with('success',"Student has been added sucessfully");
    }
    public function show($id)
    {
@@ -55,6 +92,9 @@ class StudentController extends Controller
    }
    public function destroy($id)
    {
-      
+     $student= Student::find($id);
+     $student -> delete();
+
+     return redirect()->back()->with('success',"Student has been deleted sucessfully");
    }
 }
