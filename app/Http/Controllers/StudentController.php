@@ -16,7 +16,7 @@ class StudentController extends Controller
 //     ['name' => 'Pat Bauzon']
 //  ];
 
- $data['students'] = Student::paginate(15);
+ $data['students'] = Student::orderBy('created_at', 'desc')->paginate(15);
  $data['isAdmin'] = true;
  $data['user'] = 'JohnPaul';   
  return view('students', $data);
@@ -29,8 +29,18 @@ class StudentController extends Controller
    }
    public function store(Request $request)
    {
-      
+      Student::create([
+         'fname' => $request['fname'],
+         'lname' => $request['lname'],
+         'email' => $request['email'],
+         'contact' => $request['contact'],
+
+
+      ]);
+
+      return redirect()->to('students');
    }
+
    public function edit($id)
    {
         return "The id is $id";
